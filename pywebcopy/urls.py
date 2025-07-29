@@ -285,7 +285,7 @@ def get_content_type_from_headers(headers, default=None):
     content_type = headers.get('Content-Type', default)
     if not content_type:
         return default
-    content_type = parse_separated_header(content_type)
+    content_type, params = parse_separated_header(content_type)
     return content_type
 
 
