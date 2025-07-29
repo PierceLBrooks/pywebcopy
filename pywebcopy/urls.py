@@ -276,7 +276,7 @@ def get_etag(string):
 
 def parse_separated_header(value: str):
     msg = EmailMessage()
-    msg['content-type'] = 'application/json; charset="utf8"'
+    msg['content-type'] = value
     main, params = msg.get_content_type(), msg['content-type'].params
     return main, params
 
