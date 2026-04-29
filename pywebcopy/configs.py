@@ -3,6 +3,7 @@
 import logging
 import os
 import sys
+import copy
 import tempfile
 from functools import partial
 
@@ -64,14 +65,14 @@ safe_file_types = [
     'font/*',
     'application/pdf',
     'application/json',
+    'application/xml',
 ]
 
 
 safe_http_headers = {
+    "Accept-Encoding": "identity",
     "Accept-Language": "en-US,en;q=0.9",
-    'User-Agent':
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:70.0) "
-        "Gecko/20100101 Firefox/70.0 PyWebCopyBot/%s" % __version__
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
 }
 
 #: Base configuration with preconfigured values.
@@ -91,6 +92,8 @@ default_config = {
     'http_cache': False,
     'http_headers': default_headers(**safe_http_headers),
     'delay': None,
+    # 'session_verify': None,
+    # 'session_certificate': None,
 
     # TODO: Disabled for now until I figure it out.
     # 'allowed_file_types': safe_file_types,
@@ -248,7 +251,9 @@ def get_config(project_url,
                bypass_robots=False,
                debug=False,
                delay=None,
-               threaded=None):
+               threaded=None,
+               verify=None,
+               certificate=None):
     """Create a ConfigHandler instance and return it.
     If the project_folder is not supplied it will use the users Tempdir.
 
@@ -279,7 +284,15 @@ def get_config(project_url,
                     filter(None, get_host(project_url)))))
         logger.debug('No project name provided, generated from url: %s' % project_name)
 
-    ans = ConfigHandler(default_config)
+    def_con = copy.deepcopy(default_config)
+
+    if not verify is None:
+        def_con["session_verify"] = verify
+
+    if not certificate is None:
+        def_con["session_certificate"] = certificate
+
+    ans = ConfigHandler(def_con)
     ans.setup_config(
         project_url=project_url,
         project_folder=project_folder,

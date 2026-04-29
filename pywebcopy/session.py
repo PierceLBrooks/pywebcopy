@@ -217,6 +217,10 @@ class Session(requests.Session):
         ans.headers = config.get('http_headers', default_headers())
         ans.follow_robots_txt = not config.get('bypass_robots')
         ans.delay = config.get_delay()
+        if 'session_verify' in config:
+            ans.verify = config.get('session_verify')
+        if 'session_certificate' in config:
+            ans.cert = config.get('session_certificate')
         if config.get('http_cache'):
             ans.enable_http_cache()
         # XXX I don't know if it will work?
