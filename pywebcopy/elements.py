@@ -339,17 +339,20 @@ class HTMLResource(GenericResource):
         """
         location = self.filepath
 
-        for elem, attr, url, pos in parsing_buffer:
-            if not self.scheduler.validate_url(url):
-                continue
+        try:
+            for elem, attr, url, pos in parsing_buffer:
+                if not self.scheduler.validate_url(url):
+                    continue
 
-            sub_context = self.context.create_new_from_url(url)
-            ans = self.scheduler.get_handler(
-                elem.tag,
-                self.session, self.config, self.scheduler, sub_context)
-            self.scheduler.handle_resource(ans)
-            resolved = ans.resolve(location)
-            elem.replace_url(url, resolved, attr, pos)
+                sub_context = self.context.create_new_from_url(url)
+                ans = self.scheduler.get_handler(
+                    elem.tag,
+                    self.session, self.config, self.scheduler, sub_context)
+                self.scheduler.handle_resource(ans)
+                resolved = ans.resolve(location)
+                elem.replace_url(url, resolved, attr, pos)
+        except:
+            pass
 
         return parsing_buffer
 
